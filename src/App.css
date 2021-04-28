@@ -28,3 +28,7 @@ body {
   right: 1%;
   top: 70px;
 }
+
+.connect-button {
+  min-width: 120px;
+}
