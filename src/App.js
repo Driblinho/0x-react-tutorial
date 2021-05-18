@@ -18,9 +18,18 @@ function App() {
       const provider = await detectEthereumProvider()
       const web3 = new Web3(provider)
 
-      const address = await ConnectWallet()
-      if (address)
-        setMessage(messages =>[...messages, {head : "User Login", body: `addres: ${address}`, variant: 'success'}])
+      if(!provider) {
+
+        setMessage(messages => [...messages, {head : "Wallet not found", body: `Please install MetaMask!`, variant: 'warning'}])
+
+      } else {
+
+        const address = await ConnectWallet()
+        if (address)
+          setMessage(messages =>[...messages, {head : "User Login", body: `addres: ${address}`, variant: 'success'}])
+
+      }
+      
   }
 
   const ConnectWallet = async () => {
@@ -39,16 +48,18 @@ function App() {
       return accounts[0]
 
     } catch(err) {
-
         if (err.code === 4001) {
           // EIP-1193 userRejectedRequest error
           // If this happens, the user rejected the connection request.
           console.log('Please connect to MetaMask.')
           setMessage(messages =>[...messages, {head : "User Rejected Request", body: 'Please connect to MetaMask.', variant: 'info'}])
 
+        } else if(err.code === -32002) {
+          console.log('Please unlock MetaMask.')
+          setMessage(messages =>[...messages, {head : "User Request Pending", body: 'Please unlock MetaMask and try agin.', variant: 'info'}])
         } else {
           console.error(err);
-          setMessage(messages =>[...messages, {head : "Error", body: err, variant: 'info'}])
+          setMessage(messages =>[...messages, {head : "Error", body: err.message, variant: 'info'}])
         }
 
     }
